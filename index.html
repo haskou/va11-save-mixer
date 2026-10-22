@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VA-11 HALL-A · Save Mixer (PC ⇄ PS Vita)</title>
+  <meta name="description" content="Convert VA-11 HALL-A saves between PC and PS Vita, right in your browser.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23ff3d8b' d='M2 2h12v2H2zM3 4h10v1H3zM4 5h8v1H4zM5 6h6v1H5zM6 7h4v1H6z'/%3E%3Cpath fill='%2329e7f2' d='M7 8h2v5H7zM4 13h8v1H4z'/%3E%3C/svg%3E">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <div class="city" aria-hidden="true"></div>
+  <div class="rain" aria-hidden="true"></div>
+
+  <header class="sign">
+    <svg class="glass" viewBox="0 0 16 18" shape-rendering="crispEdges" aria-hidden="true">
+      <path class="glass-rim" d="M1 1h14v1H1z"/>
+      <path class="glass-drink" d="M2 2h12v2H2zM3 4h10v1H3zM4 5h8v1H4zM5 6h6v1H5zM6 7h4v1H6z"/>
+      <path class="glass-shine" d="M3 2h1v2H3z"/>
+      <path class="glass-stem" d="M7 8h2v7H7zM4 15h8v2H4z"/>
+      <path class="glass-cherry" d="M12 0h2v2h-2z"/>
+    </svg>
+    <div>
+      <h1>
+        <span class="neon neon-pink" data-text="VA-11 HALL-A">VA-11 HALL-A</span>
+        <span class="neon neon-cyan">SAVE MIXER</span>
+      </h1>
+      <p class="tagline">Time to mix saves and change lives.</p>
+    </div>
+  </header>
+
+  <p class="intro">
+    Convert your <strong>VA-11 HALL-A</strong> saves between <strong>PC</strong> and <strong>PS Vita</strong>.
+    Everything is mixed in your browser: your files never leave your machine.
+  </p>
+
+  <nav class="tabs" role="tablist" aria-label="Conversion direction">
+    <button role="tab" id="tab-pc2vita" aria-controls="pc2vita" aria-selected="true">PC ➜ VITA</button>
+    <button role="tab" id="tab-vita2pc" aria-controls="vita2pc" aria-selected="false" tabindex="-1">VITA ➜ PC</button>
+  </nav>
+
+  <main>
+    <section id="pc2vita" class="panel" role="tabpanel" aria-labelledby="tab-pc2vita">
+      <div class="panel-bar"><span>BTC-74 // RECIPE #01</span><span class="drink">“PIANO WOMAN”</span></div>
+      <p class="recipe-desc">Bring your PC saves to the Vita. You need your Vita's <em>decrypted</em> <code>savefile.sav</code> as the base: that keeps your settings and any saves already there.</p>
+
+      <div class="ingredients">
+        <div class="ingredient" data-drop="pc">
+          <span class="dose dose-red">1</span>
+          <h3>PC saves</h3>
+          <p class="hint">The <code>Record of Waifu Wars[N].txt</code> files from your <code>saves</code> folder. Drop the folder or the files here.</p>
+          <div class="pick">
+            <label class="btn btn-small">Files<input type="file" id="pc-files" accept=".txt" multiple></label>
+            <label class="btn btn-small">Folder<input type="file" id="pc-dir" webkitdirectory></label>
+          </div>
+          <ul class="chosen" id="pc-chosen" aria-live="polite"></ul>
+        </div>
+
+        <div class="ingredient" data-drop="base">
+          <span class="dose dose-blue">2</span>
+          <h3>Vita savefile.sav</h3>
+          <p class="hint">The <strong>decrypted</strong> one you copied with VitaShell (<em>Open decrypted</em>). An encrypted one won't work.</p>
+          <div class="pick">
+            <label class="btn btn-small">Pick savefile.sav<input type="file" id="base-file" accept=".sav"></label>
+          </div>
+          <ul class="chosen" id="base-chosen" aria-live="polite"></ul>
+        </div>
+      </div>
+
+      <fieldset class="options">
+        <legend>If a slot is already taken on the Vita…</legend>
+        <label><input type="radio" name="mode" value="move" checked> move the Vita save to a free slot</label>
+        <label><input type="radio" name="mode" value="overwrite"> overwrite it with the PC save</label>
+      </fieldset>
+
+      <div class="actions">
+        <button class="btn btn-mix" id="mix-pc2vita">MIX!</button>
+      </div>
+
+      <div class="result" id="result-pc2vita" hidden>
+        <pre class="terminal" id="log-pc2vita" role="status"></pre>
+        <div class="table-wrap" hidden>
+          <table>
+            <thead><tr><th>Vita slot</th><th>Source</th><th>In-game day</th><th>Saved</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <a class="btn btn-serve" id="dl-pc2vita" hidden download="savefile.sav">SERVE savefile.sav</a>
+      </div>
+    </section>
+
+    <section id="vita2pc" class="panel" role="tabpanel" aria-labelledby="tab-vita2pc" hidden>
+      <div class="panel-bar"><span>BTC-74 // RECIPE #02</span><span class="drink">“MOONBLAST”</span></div>
+      <p class="recipe-desc">Bring your Vita saves to the PC. Each used slot becomes a <code>Record of Waifu Wars[N].txt</code>.</p>
+
+      <div class="ingredients single">
+        <div class="ingredient" data-drop="src">
+          <span class="dose dose-blue">1</span>
+          <h3>Vita savefile.sav</h3>
+          <p class="hint">The <strong>decrypted</strong> one you copied with VitaShell (<em>Open decrypted</em>).</p>
+          <div class="pick">
+            <label class="btn btn-small">Pick savefile.sav<input type="file" id="src-file" accept=".sav"></label>
+          </div>
+          <ul class="chosen" id="src-chosen" aria-live="polite"></ul>
+        </div>
+      </div>
+
+      <fieldset class="options">
+        <legend>Options</legend>
+        <label><input type="checkbox" id="lowercase"> lowercase file names (Linux: <code>record of waifu wars[N].txt</code>)</label>
+      </fieldset>
+
+      <div class="actions">
+        <button class="btn btn-mix" id="mix-vita2pc">MIX!</button>
+      </div>
+
+      <div class="result" id="result-vita2pc" hidden>
+        <pre class="terminal" id="log-vita2pc" role="status"></pre>
+        <div class="table-wrap" hidden>
+          <table>
+            <thead><tr><th>File</th><th>In-game day</th><th>Saved</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <a class="btn btn-serve" id="dl-vita2pc" hidden download="va11-hall-a-pc-saves.zip">SERVE ZIP</a>
+      </div>
+    </section>
+  </main>
+
+  <section class="howto" aria-labelledby="howto-title">
+    <h2 id="howto-title"><span class="neon neon-cyan">INSTRUCTIONS</span></h2>
+
+    <article class="step">
+      <div class="step-body">
+        <h3>0. Before anything else</h3>
+        <ul>
+          <li>You need a PS Vita running <strong>HENkaku</strong> (h-encore, Enso…) and <strong>VitaShell</strong>.</li>
+          <li><strong>Back up</strong> your saves on both sides before touching anything.</li>
+          <li>You must have <strong>saved at least once</strong> on the Vita: the converter uses that file as its base.</li>
+          <li>Close the game before copying files (on the Vita: press PS and peel off the LiveArea page).</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="step">
+      <div class="step-body">
+        <h3>1. Where the PC saves live</h3>
+        <table class="paths">
+          <tr><th>Windows</th><td><code>%LOCALAPPDATA%\VA_11_Hall_A\saves</code></td></tr>
+          <tr><th>macOS</th><td><code>~/Library/Application Support/com.yoyogames.macyoyorunner/saves</code></td></tr>
+          <tr><th>Linux</th><td><code>~/.config/VA_11_Hall_A/saves</code> (lowercase names)</td></tr>
+        </table>
+        <p>Each slot is a <code>Record of Waifu Wars[N].txt</code> (N = 1–24). <code>Waifu Preferences.txt</code> holds your settings and is not converted.</p>
+      </div>
+    </article>
+
+    <article class="step">
+      <div class="step-body">
+        <h3>2. Getting savefile.sav off the Vita</h3>
+        <ol>
+          <li>In VitaShell, go to <code>ux0:user/00/savedata/</code>.</li>
+          <li>Find the game's folder: <code>PCSB01166</code> for the European release; other regions use a different ID. If unsure, open <code>sce_sys/param.sfo</code> inside the folder: VitaShell shows the game title.</li>
+          <li><strong>Backup:</strong> copy the whole folder (△ → <em>Copy</em>) and paste it somewhere like <code>ux0:data/</code>.</li>
+          <li>Highlight the game folder and press △ → <em>Open decrypted</em>.</li>
+          <li>On <code>savefile.sav</code>: △ → <em>Copy</em>. Go to <code>ux0:data/</code> and △ → <em>Paste</em>.</li>
+          <li>Move <code>ux0:data/savefile.sav</code> to your computer (VitaShell FTP with SELECT, or USB).</li>
+        </ol>
+      </div>
+    </article>
+
+    <article class="step">
+      <div class="step-body">
+        <h3>3. Recipe: PC ➜ Vita</h3>
+        <ol>
+          <li>Up top, in <em>PC ➜ VITA</em>, add the <code>Record of Waifu Wars[N].txt</code> files and the Vita's decrypted <code>savefile.sav</code>.</li>
+          <li>Hit <strong>MIX!</strong>. The table shows which Vita slot each save lands in. By default PC slot N goes to Vita slot N; if that slot was taken, the Vita save moves to a free one.</li>
+          <li>Download the new <code>savefile.sav</code> and copy it to <code>ux0:data/</code> on the Vita.</li>
+          <li>In VitaShell: △ → <em>Copy</em> on that file, go to <code>ux0:user/00/savedata/</code>, highlight the game folder, △ → <em>Open decrypted</em> and △ → <em>Paste</em> (overwrite).</li>
+          <li>Start the game and load your save.</li>
+        </ol>
+      </div>
+    </article>
+
+    <article class="step">
+      <div class="step-body">
+        <h3>4. Recipe: Vita ➜ PC</h3>
+        <ol>
+          <li>In <em>VITA ➜ PC</em>, add the decrypted <code>savefile.sav</code> and hit <strong>MIX!</strong>.</li>
+          <li>Download the ZIP (or the single files) and unzip it into the PC <code>saves</code> folder with the game closed. Files with the same name get replaced.</li>
+          <li>On Linux, tick <em>lowercase file names</em>.</li>
+          <li>If you use Steam Cloud and the game reports a sync conflict on launch, pick the <strong>local</strong> files.</li>
+        </ol>
+      </div>
+    </article>
+
+    <article class="step">
+      <div class="step-body">
+        <h3>House notes</h3>
+        <ul>
+          <li>The PC has 24 slots. If the Vita uses a higher slot, the file is still generated, but the PC may not show it.</li>
+          <li>Saves from PC version 1.0 have 3 fewer values at the end; they get padded with <code>0</code>.</li>
+          <li>Settings (volume, display…) are not converted: each platform keeps its own.</li>
+          <li>If the converter says the <code>[data]</code> header is missing, your <code>savefile.sav</code> is encrypted: copy it again through <em>Open decrypted</em>.</li>
+        </ul>
+      </div>
+    </article>
+  </section>
+
+  <footer>
+    Fan-made tool, not affiliated with Sukeban Games or Ysbryd Games. VA-11 HALL-A belongs to its creators.
+  </footer>
+
+  <noscript><p class="noscript">This converter needs JavaScript.</p></noscript>
+</body>
+</html>
