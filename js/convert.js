@@ -10,7 +10,7 @@
 // Vita container: GameMaker INI. Section [data], keys "0".."29"; each slot key
 // stores a whole INI as an escaped string ("\r\n" -> "^r", '"' -> "^q") whose
 // keys "0".."246" are the slot values in PC order, numbers formatted "%.6f".
-// Key 29 holds the Vita preferences. The file is NUL-padded to 4096 bytes.
+// Key 29 holds the Vita preferences. The file is NUL-padded to a multiple of 4096 bytes.
 
 export const SLOT_VALUES = 247;
 export const PC_SLOTS = 24;
@@ -97,7 +97,7 @@ export function parsePcSlot(text, label = 'PC') {
 export function formatPcSlot(values, label = 'Vita') {
   const lines = [];
   for (let i = 0; i < SLOT_VALUES; i++) {
-    const where = `${label}, valor ${i}`;
+    const where = `${label}, value ${i}`;
     if (i === SPLIT_INDEX) {
       lines.push(`${pcNumber(values[i], where)} ${values[i + 1]}`);
       i++;
